@@ -1,0 +1,122 @@
+﻿<!--The MIT License (MIT)
+
+Copyright (c) 2016 Jim Daly
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.-->
+    <UserControl x:Class="CRMWebAPILoginControl.LoginControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:CRMWebAPILoginControl"
+             mc:Ignorable="d"
+             d:DesignHeight="200"
+             d:DesignWidth="400"
+             Loaded="setPassword">
+    <!--<UserControl.DataContext>
+        <local:ObservableConfiguration />
+    </UserControl.DataContext>-->
+    <Grid x:Name="LoginGrid"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          Height="Auto"
+          Width="Auto"
+          Margin="5,5,5,4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="115" />
+            <ColumnDefinition Width="115" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Label Content="Enter your connection information"
+               Grid.ColumnSpan="2"
+               VerticalAlignment="Center" />
+        <Label Grid.Row="1"
+               Grid.Column="0"
+               Target="{Binding ElementName=ServiceUrl}"
+               Content="CRM URL"
+               ToolTip="For CRM Online use 'https://&lt;org name&gt;.crm.dynamics.com/' For CRM on-premise use 'http://&lt;server name&gt;/&lt;org name&gt;/'"
+               VerticalAlignment="Center" />
+        <TextBox x:Name="ServiceUrl"
+                 Text="{Binding OServiceUrl}"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 VerticalAlignment="Center" />
+        <Label Grid.Row="2"
+               Grid.Column="0"
+               Target="{Binding ElementName=Username}"
+               Content="User name"
+               VerticalAlignment="Center" />
+        <TextBox x:Name="Username"
+                 Text="{Binding OUsername}"
+                 Grid.Row="2"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 VerticalAlignment="Center" />
+        <Label Grid.Row="3"
+               Grid.Column="0"
+               Target="{Binding ElementName=Password}"
+               Content="Password"
+               VerticalAlignment="Center" />
+        <PasswordBox  x:Name="Password"
+                      Grid.Row="3"
+                      Grid.Column="1"
+                      Grid.ColumnSpan="2"
+                      VerticalAlignment="Center" />
+        <Label Grid.Row="4"
+               Grid.Column="0"
+               Target="{Binding ElementName=Domain}"
+               Content="Domain"
+               VerticalAlignment="Center"
+               ToolTip="Use Domain only when you are connecting to an on-premise deployment with your network user credentials." />
+        <TextBox  x:Name="Domain"
+                  Text="{Binding ODomain}"
+                  Grid.Row="4"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  VerticalAlignment="Center" />
+        <StackPanel Grid.Row="6"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Orientation="Horizontal">
+            <Button x:Name="login"
+                    IsDefault="True"
+                    Content="Login"
+                    Margin="10,0,5,0"
+                    Width="75"
+                    Click="login_Click" />
+            <Button x:Name="cancel"
+                    IsCancel="True"
+                    Content="Cancel"
+                    Margin="5,0,10,0"
+                    Width="75"
+                    Click="cancel_Click" />
+            <TextBlock x:Name="message" />
+        </StackPanel>
+    </Grid>
+</UserControl>
