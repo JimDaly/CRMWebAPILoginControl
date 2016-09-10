@@ -127,73 +127,21 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
         /// <remarks>Refresh the access token before every service call to avoid having to manage token expiration.</remarks>
         public AuthenticationResult AcquireToken()
         {
-            if (_config != null && (!string.IsNullOrEmpty(_config.Username) && _config.Password != null))
-            {
-                /* Original:
-                    UserCredential cred = new UserCredential(_config.Username, _config.Password);
-                    return _context.AcquireToken(_config.ServiceUrl, _config.ClientId, cred);
-                */
-
-                //Modified Start
-                /*
-                Modification allows for catching the error when the organization hasn't granted consent
-                with CRM Online and will display the Azure AD consent dialog
-                 */
-                try
-                {
-                    UserCredential cred = new UserCredential(_config.Username, _config.Password);
-                    return _context.AcquireToken(_config.ServiceUrl, _config.ClientId, cred);
-                }
-                catch (Exception ex)
-                {
-                    if (ex.HResult == -2146233088) //"invalid_grant"
-                    {
-                        try
-                        {
-                            return _context.AcquireToken(_config.ServiceUrl, _config.ClientId, new Uri(_config.RedirectUrl),
-               PromptBehavior.Auto);
-                        }
-                        catch (Exception)
-                        {
-
-                            throw;
-                        }
-
-                    }
-                }
-                //Modified End
-
-            }
-            return _context.AcquireToken(_config.ServiceUrl, _config.ClientId, new Uri(_config.RedirectUrl),
-                PromptBehavior.Auto);
+            //Not trying to pass the password through without the AD popup, just fill out everything else.
+                       
+            return _context.AcquireTokenAsync(
+                _config.ServiceUrl,
+                _config.ClientId,
+                new Uri(_config.RedirectUrl),
+                new PlatformParameters(PromptBehavior.Auto),
+                new UserIdentifier(
+                    _config.Username,
+                    UserIdentifierType.RequiredDisplayableId)
+                ).Result;
         }
-
-        /// <summary>
-        /// Returns the authentication result for the configured authentication context.
-        /// </summary>
-        /// <param name="username">The username of a CRM system user in the target organization. </param>
-        /// <param name="password">The password of a CRM system user in the target organization.</param>
-        /// <returns>The authentication result.</returns>
-        /// <remarks>Setting the username or password parameters to null results in the user being prompted to
-        /// enter log-on credentials. Refresh the access token before every service call to avoid having to manage
-        /// token expiration.</remarks>
-        public AuthenticationResult AcquireToken(string username, SecureString password)
-        {
-
-            try
-            {
-                if (!string.IsNullOrEmpty(username) && password != null)
-                {
-                    UserCredential cred = new UserCredential(username, password);
-                    return _context.AcquireToken(_config.ServiceUrl, _config.ClientId, cred);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Authentication failed. Verify the configuration values are correct.", e);
-            }
-            return null;
-        }
+        //TODO: What happens when the token expires? Will the user be prompted again?  - Not acceptable.
+        //See http://stackoverflow.com/questions/37384660/adal-authentication-without-dialog-box-prompt
+        // Possible to make the Configuration class inherit from TokenCache rather than the FileCache used in the sample?
 
 
         /// <summary>
@@ -201,7 +149,7 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
         /// </summary>
         /// <returns>The URL of the authentication authority on the specified endpoint address, or an empty string
         /// if the authority cannot be discovered.</returns>
-         public static string DiscoverAuthority(string serviceUrl)
+        public static string DiscoverAuthority(string serviceUrl)
         {
             try
             {
@@ -214,10 +162,10 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
             {
                 throw new Exception("An HTTP request exception occurred during authority discovery.", e);
             }
-            catch (Exception e )
+            catch (Exception e)
             {
                 // This exception ocurrs when the service is not configured for OAuth.
-                if( e.HResult == -2146233088 )
+                if (e.HResult == -2146233088)
                 {
                     return String.Empty;
                 }
@@ -270,7 +218,7 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
         private void SetClientHandler()
         {
             // Check the Authority to determine if OAuth authentication is used.
-            if (String.IsNullOrEmpty(Authority))
+            if (string.IsNullOrEmpty(Authority))
             {
                 if (_config.Username != String.Empty)
                 {
@@ -300,7 +248,7 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
         {
             Authentication _auth = null;
 
-            public OAuthMessageHandler( Authentication auth, HttpMessageHandler innerHandler )
+            public OAuthMessageHandler(Authentication auth, HttpMessageHandler innerHandler)
                 : base(innerHandler)
             {
                 _auth = auth;
