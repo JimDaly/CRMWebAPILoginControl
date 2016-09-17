@@ -62,17 +62,17 @@ namespace TestProject
             //Setting your credentials here will populate the dialog
 
             //On-premise:
-            config.OServiceUrl = "http://yourCRMServer/yourOrg/";
-            config.OUsername = "administrator";
-            SecureString ss = new SecureString();
-            "yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
-            config.ODomain = "~";
-
-            //online
-            //config.OServiceUrl = "https://yourOrg.crm.dynamics.com/";
-            //config.OUsername = "you@yourOrg.onmicrosoft.com";
+            //config.OServiceUrl = "http://yourCRMServer/yourOrg/";
+            //config.OUsername = "administrator";
             //SecureString ss = new SecureString();
             //"yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
+            //config.ODomain = "~";
+
+            //online
+            config.OServiceUrl = "https://yourOrg.crm.dynamics.com/";
+            config.OUsername = "you@yourOrg.onmicrosoft.com";
+            SecureString ss = new SecureString();
+            "yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
 
 
             config.Password = ss;
