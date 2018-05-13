@@ -54,8 +54,8 @@ namespace TestProject
 
             //TODO: To connect to CRM Online you must add your application ClientId and redirect URL here:
 
-            //config.ClientId = "########-####-####-####-############";
-            //config.RedirectUrl = "https://yourDomain/yourApp";
+            config.ClientId = "e5cf0024-a66a-4f16-85ce-99ba97a24bb2";
+            config.RedirectUrl = "http://localhost/SdkSample";
 
 
             //For testing: 

@@ -127,6 +127,11 @@ namespace Microsoft.Crm.Sdk.Samples.HelperCode
         /// <remarks>Refresh the access token before every service call to avoid having to manage token expiration.</remarks>
         public AuthenticationResult AcquireToken()
         {
+            if (string.IsNullOrEmpty(_config.ClientId) || string.IsNullOrEmpty(_config.RedirectUrl))
+            {
+                throw new Exception("ClientId and RedirectUrl must be set.");
+            }
+
             if (_config != null && (!string.IsNullOrEmpty(_config.Username) && _config.Password != null))
             {
                 /* Original:

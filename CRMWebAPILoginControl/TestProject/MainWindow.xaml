@@ -27,7 +27,7 @@ SOFTWARE.-->
         xmlns:local="clr-namespace:TestProject"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="100"
+        Height="136.667"
         Width="525">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -47,8 +47,8 @@ SOFTWARE.-->
                    Grid.Column="1"
                    Grid.Row="0"
                    VerticalAlignment="Center"
-                   Margin="10,0,0,0"
-                   TextWrapping="Wrap" />
+                   Margin="10,7,0,18"
+                   TextWrapping="Wrap" Height="61" Grid.RowSpan="2" />
         <TextBlock x:Name="Message"
                    Grid.Column="1"
                    Grid.Row="1"
