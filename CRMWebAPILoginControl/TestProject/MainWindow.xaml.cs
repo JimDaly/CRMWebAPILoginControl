@@ -37,141 +37,141 @@ using System.Windows.Threading;
 
 namespace TestProject
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+  /// <summary>
+  /// Interaction logic for MainWindow.xaml
+  /// </summary>
+  public partial class MainWindow : Window
+  {
+    private ObservableConfiguration config { get; set; }
+    private Authentication auth = null;
+
+
+    public MainWindow()
     {
-        private ObservableConfiguration config { get; set; }
-        private Authentication auth = null;
+      InitializeComponent();
+
+      config = new ObservableConfiguration();
+
+      //TODO: To connect to CRM Online you must add your application ClientId and redirect URL here:
+
+      config.ClientId = "51f81489-12ee-4a9e-aaae-a2591f45987d";
+      config.RedirectUrl = "app://58145B91-0C36-4500-8554-080854F2AC97";
 
 
-        public MainWindow()
-        {
-            InitializeComponent();
+      //For testing: 
+      //Setting your credentials here will populate the dialog
 
-            config = new ObservableConfiguration();
+      //On-premise:
+      //config.OServiceUrl = "http://yourCRMServer/yourOrg/";
+      //config.OUsername = "administrator";
+      //SecureString ss = new SecureString();
+      //"yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
+      //config.ODomain = "~";
 
-            //TODO: To connect to CRM Online you must add your application ClientId and redirect URL here:
-
-            config.ClientId = "e5cf0024-a66a-4f16-85ce-99ba97a24bb2";
-            config.RedirectUrl = "http://localhost/SdkSample";
-
-
-            //For testing: 
-            //Setting your credentials here will populate the dialog
-
-            //On-premise:
-            //config.OServiceUrl = "http://yourCRMServer/yourOrg/";
-            //config.OUsername = "administrator";
-            //SecureString ss = new SecureString();
-            //"yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
-            //config.ODomain = "~";
-
-            //online
-            config.OServiceUrl = "https://yourOrg.crm.dynamics.com/";
-            config.OUsername = "you@yourOrg.onmicrosoft.com";
-            SecureString ss = new SecureString();
-            "yourPassword".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
+      //online
+      config.OServiceUrl = "https://yourorg.crm.dynamics.com/";
+      config.OUsername = "you@yourorg.onmicrosoft.com";
+      SecureString ss = new SecureString();
+      "y0urp455w0rd".ToCharArray().ToList().ForEach(p => ss.AppendChar(p));
 
 
-            config.Password = ss;
+      config.Password = ss;
 
-        }
-
-        private async void connectButton_Click(object sender, RoutedEventArgs e)
-        {
-            //Clear any message text
-            await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                        new Action(() => Message.Text = ""));
-
-            Window loginWindow = new Window
-            {
-
-                Title = "Login to CRM",
-                Content = new LoginControl(),
-                DataContext = config,
-                Height = 275,
-                Width = 400
-            };
-
-            loginWindow.ShowDialog();
-
-
-
-            if (loginWindow.DialogResult.HasValue && loginWindow.DialogResult.Value.Equals(true))
-            {
-
-                string authority = await Authentication.DiscoverAuthorityAsync(config.ServiceUrl);
-
-                auth = new Authentication(config, authority);
-                //You are connected..
-
-                await ShowUserId();
-            }
-        }
-
-
-        /// <summary>
-        /// Example method that retrieves the user's Id value
-        /// </summary>
-        /// <returns></returns>
-        private async Task ShowUserId()
-        {
-            using (HttpClient client = getHttpClient())
-            {
-                HttpRequestMessage WhoAmIRequest = new HttpRequestMessage(HttpMethod.Get, "WhoAmI()");
-
-
-                try
-                {
-                    HttpResponseMessage WhoAmIResponse = await client.SendAsync(WhoAmIRequest);
-
-
-                    if (WhoAmIResponse.StatusCode == HttpStatusCode.OK)
-                    {
-                        JObject response = JsonConvert.DeserializeObject<JObject>(await WhoAmIResponse.Content.ReadAsStringAsync());
-
-                        await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                            new Action(() => userId.Text = string.Format("Connected to {0} with userid: '{1}'.", config.ServiceUrl, (string)response.GetValue("UserId"))));
-
-                    }
-                    else
-                    {
-
-                        CrmHttpResponseException ex = new CrmHttpResponseException(WhoAmIResponse.Content);
-
-
-                        await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                            new Action(() => Message.Text = ex.Message));
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                    await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
-                           new Action(() => Message.Text = ex.Message));
-                }
-
-
-            }
-        }
-
-        /// <summary>
-        /// Method to get a configured HttpClient using the helper Authentication and Configuration classes
-        /// </summary>
-        /// <returns></returns>
-        public HttpClient getHttpClient()
-        {
-
-            HttpClient httpClient = new HttpClient(auth.ClientHandler, true);
-            httpClient.BaseAddress = new Uri(config.ServiceUrl + "api/data/v8.1/");
-            httpClient.Timeout = new TimeSpan(0, 2, 0);
-            httpClient.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
-            httpClient.DefaultRequestHeaders.Add("OData-Version", "4.0");
-            httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            return httpClient;
-        }
     }
+
+    private async void connectButton_Click(object sender, RoutedEventArgs e)
+    {
+      //Clear any message text
+      await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                  new Action(() => Message.Text = ""));
+
+      Window loginWindow = new Window
+      {
+
+        Title = "Login to CRM",
+        Content = new LoginControl(),
+        DataContext = config,
+        Height = 275,
+        Width = 400
+      };
+
+      loginWindow.ShowDialog();
+
+
+
+      if (loginWindow.DialogResult.HasValue && loginWindow.DialogResult.Value.Equals(true))
+      {
+
+        string authority = await Authentication.DiscoverAuthorityAsync(config.ServiceUrl);
+
+        auth = new Authentication(config, authority);
+        //You are connected..
+
+        await ShowUserId();
+      }
+    }
+
+
+    /// <summary>
+    /// Example method that retrieves the user's Id value
+    /// </summary>
+    /// <returns></returns>
+    private async Task ShowUserId()
+    {
+      using (HttpClient client = getHttpClient())
+      {
+        HttpRequestMessage WhoAmIRequest = new HttpRequestMessage(HttpMethod.Get, "WhoAmI()");
+
+
+        try
+        {
+          HttpResponseMessage WhoAmIResponse = await client.SendAsync(WhoAmIRequest);
+
+
+          if (WhoAmIResponse.StatusCode == HttpStatusCode.OK)
+          {
+            JObject response = JsonConvert.DeserializeObject<JObject>(await WhoAmIResponse.Content.ReadAsStringAsync());
+
+            await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                new Action(() => userId.Text = string.Format("Connected to {0} with userid: '{1}'.", config.ServiceUrl, (string)response.GetValue("UserId"))));
+
+          }
+          else
+          {
+
+            CrmHttpResponseException ex = new CrmHttpResponseException(WhoAmIResponse.Content);
+
+
+            await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                new Action(() => Message.Text = ex.Message));
+          }
+        }
+        catch (Exception ex)
+        {
+
+          await Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                 new Action(() => Message.Text = ex.Message));
+        }
+
+
+      }
+    }
+
+    /// <summary>
+    /// Method to get a configured HttpClient using the helper Authentication and Configuration classes
+    /// </summary>
+    /// <returns></returns>
+    public HttpClient getHttpClient()
+    {
+
+      HttpClient httpClient = new HttpClient(auth.ClientHandler, true);
+      httpClient.BaseAddress = new Uri(config.ServiceUrl + "api/data/v8.1/");
+      httpClient.Timeout = new TimeSpan(0, 2, 0);
+      httpClient.DefaultRequestHeaders.Add("OData-MaxVersion", "4.0");
+      httpClient.DefaultRequestHeaders.Add("OData-Version", "4.0");
+      httpClient.DefaultRequestHeaders.Accept.Add(
+          new MediaTypeWithQualityHeaderValue("application/json"));
+      return httpClient;
+    }
+  }
 }
